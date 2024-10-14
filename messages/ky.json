@@ -1,0 +1,28 @@
+{
+  "sidebar": {
+    "dashboard": "Башы",
+    "farm": "Фермерлер",
+    "pet": "Тукум",
+    "bulls": "Бука",
+    "cow": "Уйлар",
+    "breeds": "Тукумдар",
+    "suit": "Түс",
+    "reports": "Отчеттор",
+    "quit": "Чыгуу"
+  },
+  "login": {
+    "login-button": "Кирүү",
+    "logout-button": "Чыгуу"
+  },
+  "farmpage": {
+    "title": "Тизме",
+    "create-button": "Түзүү",
+    "search": "Издөө",
+    "reset": "Сброс",
+    "farmer": "Фермер",
+    "paragraph": "Калктуу пункт",
+    "try": "Аракеттер",
+    "edit": "Оңдоо",
+    "check": "Кароо"
+  }
+}
