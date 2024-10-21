@@ -3,67 +3,67 @@
 import { useEffect, useRef } from "react";
 
 const BarChart = () => {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    const ctx = canvas?.getContext("2d");
+    if (canvas) {
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        const data = [
+          { label: "Манасский район", value: 10 },
+          { label: "Нарынский район", value: 30 },
+          { label: "Айтматовский район", value: 40 },
+          { label: "Бакaй-Атинский район", value: 60 },
+          { label: "Иссык-Кульский район", value: 80 },
+          { label: "Кочкорский район", value: 100 },
+          { label: "Тонский район", value: 50 },
+          { label: "Ак-Талинский район", value: 70 },
+          { label: "Ат-Башинский район", value: 110 },
+          { label: "Ак-Суйский район", value: 150 },
+          { label: "Жети-Огузский район", value: 130 },
+          { label: "Тюпский район", value: 200 },
+          { label: "Таласский район", value: 300 },
+        ];
 
-    if (ctx) {
-      const labels = [
-        "Манасский район",
-        "Нарынский район",
-        "Айтматовский район",
-        "Бакаи-Атинский район",
-        "Ыссык-Кульский район",
-        "Кочкорский район",
-        "Тонский район",
-        "Ак-Талинский район",
-        "Ат-Башынский район",
-        "Ак-Суйский район",
-        "Жети-Огузский район",
-        "Тюпский район",
-        "Таласский район",
-      ];
-      const values = [5, 10, 15, 20, 25, 50, 75, 100, 125, 150, 175, 200, 300];
+        const chartWidth = canvas.offsetWidth;
+        const chartHeight = 500;
+        const barHeight = 5;
+        const padding = 30;
+        const maxBarWidth = Math.max(...data.map((d) => d.value));
 
-      const barHeight = 20;
-      const barGap = 8;
-      const chartTop = 40;
-      const chartLeft = 120;
-      const maxBarWidth = 450;
+        canvas.width = chartWidth;
+        canvas.height = chartHeight;
 
-      const maxValue = Math.max(...values);
+        ctx.clearRect(0, 0, chartWidth, chartHeight);
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const labelWidth = 180;
+        const startX = labelWidth + 20;
 
-      labels.forEach((label, index) => {
-        const value = values[index];
-        const barWidth = (value / maxValue) * maxBarWidth;
+        const scaleFactor = 1;
 
-        ctx.font = "14px Arial";
-        ctx.fillStyle = "#333";
-        ctx.textAlign = "right";
-        ctx.fillText(
-          label,
-          chartLeft - 10,
-          chartTop + index * (barHeight + barGap) + barHeight / 2 + 5
-        );
+        data.forEach((d, index) => {
+          const x = startX;
+          const y = index * (barHeight + padding);
+          const barWidth =
+            (d.value / maxBarWidth) * (chartWidth - startX - 50) * scaleFactor;
 
-        ctx.fillStyle = "#007bff";
-        ctx.fillRect(
-          chartLeft,
-          chartTop + index * (barHeight + barGap),
-          barWidth,
-          barHeight
-        );
-      });
+          ctx.fillStyle = "#000";
+          ctx.font = "16px sans-serif";
+          ctx.textBaseline = "middle";
+          ctx.textAlign = "right";
+          ctx.fillText(d.label, startX - 20, y + barHeight / 2);
+
+          ctx.fillStyle = "#3B82F6";
+          ctx.fillRect(x, y, barWidth, barHeight);
+        });
+      }
     }
   }, []);
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      <canvas ref={canvasRef} width={700} height={200}></canvas>
+    <div className="flex-grow p-6">
+      <canvas ref={canvasRef}></canvas>
     </div>
   );
 };

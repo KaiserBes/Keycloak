@@ -4,20 +4,16 @@ import { Header } from "@/components/shared/header";
 import { useLocale, useTranslations } from "next-intl";
 import { SquarePlus } from "lucide-react";
 import { FC, useState } from "react";
-import { Input } from "@/components/ui/input";
 import SearchInput from "../farm/searchInput";
 import { Button, Space, Table, TableProps, Tooltip, message } from "antd";
 import { Locale } from "@/lib/locales";
-// import { Pagination } from "antd";
 
 import useFilter from "@/hooks/useFilter";
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useGetFarmQuery } from "@/store/services/farmApi";
 import { Sidebar } from "@/components/shared/sidebar";
-import UiDrawer from "@/components/shared/drawer";
 import { IFarm } from "@/store/models/interfaces/farm.interfaces";
-import dayjs from "dayjs";
 
 const pageLocale = {
   ru: "размер",
@@ -36,7 +32,7 @@ export enum ModalType {
 
 const initValueClickedJob = "";
 
-const Breeds: FC = () => {
+const Male: FC = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const locale = useLocale() as Locale;
   const searchParams = useSearchParams();
@@ -62,10 +58,30 @@ const Breeds: FC = () => {
 
   const columns: TableProps<IFarm>["columns"] = [
     {
-      title: "Порода",
+      title: "Кличка",
       dataIndex: "title",
       key: "title",
       render: (_, data) => <p>{data.performer?.title}</p>,
+    },
+    {
+      title: "Ид.номер",
+      dataIndex: "title",
+      key: "title",
+    },
+    {
+      title: t("male.color"),
+      dataIndex: "title",
+      key: "title",
+    },
+    {
+      title: t("male.breed"),
+      dataIndex: "title",
+      key: "title",
+    },
+    {
+      title: t("male.weight"),
+      dataIndex: "title",
+      key: "title",
     },
 
     {
@@ -99,7 +115,7 @@ const Breeds: FC = () => {
   };
   const router = useRouter();
   const handleClickOpenCreate = () => {
-    router.push(`/${locale}/breeds/create`);
+    router.push(`/${locale}/male/create`);
   };
 
   return (
@@ -114,7 +130,7 @@ const Breeds: FC = () => {
         <div className="w-full">
           <div className="content-area bg-gray-100 dark:bg-black">
             <div className="w-full flex justify-between items-center mb-2">
-              <span className="text-xl font-semibold">{t("suit.list")}</span>
+              <span className="text-xl font-semibold">{t("male.list")}</span>
               <Button onClick={handleClickOpenCreate}>
                 {t("farmpage.create-button")}
               </Button>
@@ -148,4 +164,4 @@ const Breeds: FC = () => {
   );
 };
 
-export default Breeds;
+export default Male;

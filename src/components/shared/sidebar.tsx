@@ -2,13 +2,7 @@
 
 import { useState } from "react";
 import { Layout, Menu } from "antd";
-import {
-  PieChartOutlined,
-  DesktopOutlined,
-  UserOutlined,
-  TeamOutlined,
-  BarsOutlined,
-} from "@ant-design/icons";
+import { ApiTwoTone, BarsOutlined } from "@ant-design/icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
@@ -25,49 +19,55 @@ export const Sidebar: React.FC = () => {
     {
       label: t("sidebar.dashboard"),
       key: "1",
-      icon: <PieChartOutlined style={{ color: "purple" }} />,
+      icon: <BarsOutlined style={{ color: "purple" }} />,
       path: `/${locale}/dashboard`,
     },
     {
       label: t("sidebar.farm"),
       key: "2",
-      icon: <DesktopOutlined style={{ color: "purple" }} />,
+      icon: <BarsOutlined style={{ color: "purple" }} />,
       path: `/${locale}/farm`,
     },
     {
       label: t("sidebar.pet"),
       key: "3",
-      icon: <UserOutlined style={{ color: "purple" }} />,
+      icon: <BarsOutlined style={{ color: "purple" }} />,
       path: `/${locale}/pet`,
     },
     {
-      label: t("sidebar.bulls"),
+      label: t("sidebar.male"),
       key: "4",
-      icon: <TeamOutlined style={{ color: "purple" }} />,
-      path: `/${locale}/bulls`,
+      icon: <BarsOutlined style={{ color: "purple" }} />,
+      path: `/${locale}/male`,
+    },
+    {
+      label: t("sidebar.female"),
+      key: "5",
+      icon: <BarsOutlined style={{ color: "purple" }} />,
+      path: `/${locale}/female`,
     },
     {
       label: t("sidebar.breeds"),
-      key: "5",
-      icon: <UserOutlined style={{ color: "purple" }} />,
+      key: "6",
+      icon: <BarsOutlined style={{ color: "purple" }} />,
       path: `/${locale}/breeds`,
     },
     {
       label: t("sidebar.suit"),
-      key: "6",
+      key: "7",
       icon: <BarsOutlined style={{ color: "purple" }} />,
       path: `/${locale}/suit`,
     },
     {
       label: t("sidebar.reports"),
-      key: "7",
+      key: "8",
       icon: <BarsOutlined style={{ color: "purple" }} />,
       path: `/${locale}/reports`,
     },
     {
       label: t("sidebar.quit"),
-      key: "8",
-      icon: <BarsOutlined style={{ color: "purple" }} />,
+      key: "9",
+      icon: <ApiTwoTone style={{ color: "purple" }} />,
       path: `/${locale}/login`,
     },
   ];
@@ -75,22 +75,22 @@ export const Sidebar: React.FC = () => {
   const activeKey = items.find((item) => pathname.startsWith(item.path))?.key;
 
   return (
-    <Layout className="" style={{ minHeight: "100vh" }}>
+    <Layout className="flex-none" style={{ minHeight: "100vh" }}>
       <Sider
+        width={200}
         collapsible
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
         className="bg-white dark:bg-[#1f1f1f]"
       >
         <Menu
-          className="dark:bg-[#1f1f1f] "
+          className="dark:bg-[#1f1f1f]"
           selectedKeys={[activeKey]}
           mode="inline"
           items={items.map((item) => ({
             ...item,
-
             label: (
-              <Link className="" href={item.path} passHref>
+              <Link href={item.path} prefetch={false}>
                 <span className="dark:text-white">{item.label}</span>
               </Link>
             ),

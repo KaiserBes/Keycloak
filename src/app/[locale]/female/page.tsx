@@ -15,9 +15,7 @@ import useFilter from "@/hooks/useFilter";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useGetFarmQuery } from "@/store/services/farmApi";
 import { Sidebar } from "@/components/shared/sidebar";
-import UiDrawer from "@/components/shared/drawer";
 import { IFarm } from "@/store/models/interfaces/farm.interfaces";
-import dayjs from "dayjs";
 
 const pageLocale = {
   ru: "размер",
@@ -36,7 +34,7 @@ export enum ModalType {
 
 const initValueClickedJob = "";
 
-const Breeds: FC = () => {
+const Female: FC = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const locale = useLocale() as Locale;
   const searchParams = useSearchParams();
@@ -62,10 +60,19 @@ const Breeds: FC = () => {
 
   const columns: TableProps<IFarm>["columns"] = [
     {
-      title: "Порода",
+      title: "Ид.номер",
       dataIndex: "title",
       key: "title",
-      render: (_, data) => <p>{data.performer?.title}</p>,
+    },
+    {
+      title: t("female.breed"),
+      dataIndex: "title",
+      key: "title",
+    },
+    {
+      title: t("female.color"),
+      dataIndex: "title",
+      key: "title",
     },
 
     {
@@ -97,9 +104,10 @@ const Breeds: FC = () => {
   const handleShowReAssign = (id: string) => {
     setIdClickedJob({ farmId: id, type: ModalType.reAssign });
   };
+
   const router = useRouter();
   const handleClickOpenCreate = () => {
-    router.push(`/${locale}/breeds/create`);
+    router.push(`/${locale}/female/create`);
   };
 
   return (
@@ -114,10 +122,8 @@ const Breeds: FC = () => {
         <div className="w-full">
           <div className="content-area bg-gray-100 dark:bg-black">
             <div className="w-full flex justify-between items-center mb-2">
-              <span className="text-xl font-semibold">{t("suit.list")}</span>
-              <Button onClick={handleClickOpenCreate}>
-                {t("farmpage.create-button")}
-              </Button>
+              <span className="text-xl font-semibold">{t("female.list")}</span>
+              <Button onClick={handleClickOpenCreate}>Создать</Button>
             </div>
             <SearchInput />
             <Table
@@ -148,4 +154,4 @@ const Breeds: FC = () => {
   );
 };
 
-export default Breeds;
+export default Female;

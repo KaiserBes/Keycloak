@@ -13,7 +13,7 @@ const Login: NextPage = () => {
   const locale = useLocale();
 
   const handleSignOut = async () => {
-    await signOut({ redirect: false });
+    await signOut({ redirect: true, callbackUrl: "/" });
   };
 
   return (
@@ -24,7 +24,6 @@ const Login: NextPage = () => {
             onClick={() =>
               signIn("keycloak", {
                 callbackUrl: `/${locale}/dashboard`,
-                prompt: "login",
               })
             }
           >
