@@ -1,7 +1,6 @@
 export interface LocalizedText {
   ky: string;
   ru: string;
-  en: string;
 }
 export interface Links {
   rel: string;

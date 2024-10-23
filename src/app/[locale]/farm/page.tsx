@@ -17,7 +17,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useGetFarmQuery } from "@/store/services/farmApi";
 import { Sidebar } from "@/components/shared/sidebar";
 import { IFarm } from "@/store/models/interfaces/farm.interfaces";
-import dayjs from "dayjs";
+import { FarmState } from "@/store/models/enums/general";
 
 const pageLocale = {
   ru: "размер",
@@ -52,24 +52,18 @@ const Farm: FC = () => {
     });
   const t = useTranslations();
 
-  const {
-    data: userJobs = {
-      totalElements: 0,
-      content: [],
-    },
-    isLoading,
-  } = useGetFarmQuery({ ...filter });
   const columns: TableProps<IFarm>["columns"] = [
     {
       title: "Фермер",
       dataIndex: "title",
       key: "title",
-      render: (_, data) => <p>{data.performer?.title}</p>,
+      render: (_, data) => <p>{data?.title}</p>,
     },
     {
       title: t("farmpage.paragraph"),
-      dataIndex: "title",
-      key: "title",
+      dataIndex: "localityTitle",
+      key: "localityTitle",
+      render: (_, data) => <p>{data?.localityTitle}</p>,
     },
 
     {
@@ -78,7 +72,7 @@ const Farm: FC = () => {
       render: (_, record) => (
         <Space size="middle">
           <Tooltip title="Посмотреть">
-            <Button onClick={() => handleShowDetail(record.farmId)} size="sm" />
+            <Button onClick={() => handleShowDetail(record.farmId)} />
           </Tooltip>
 
           <Button
@@ -88,7 +82,6 @@ const Farm: FC = () => {
               record.type === "FARM_STAT_NO"
             }
             onClick={() => handleShowReAssign(record.farmId)}
-            size="sm"
           >
             {t("common.re-assign")}
           </Button>
@@ -96,6 +89,21 @@ const Farm: FC = () => {
       ),
     },
   ];
+  // const {
+  //   data: userFarms = {
+  //     totalElements: 0,
+  //     content: [],
+  //   },
+  //   isLoading,
+  // } = useGetFarmQuery({ ...filter });
+  const [farmState, setFarmState] = useState<string>(FarmState.STARTED);
+  const { data, isFetching } = useGetFarmQuery(farmState, {
+    refetchOnMountOrArgChange: true,
+  });
+
+  // const [reAssignRequest, { isLoading: isLoadingReAssign }] =
+  //   useReAssignPerformerMutation('');
+
   const handleShowDetail = (id: string) => {
     setIdClickedJob({ farmId: id, type: ModalType.detail });
   };
@@ -107,9 +115,28 @@ const Farm: FC = () => {
     router.push(`/${locale}/farm/create`);
   };
 
+  const onClose = () => {
+    setIdClickedJob({ farmId: initValueClickedJob, type: ModalType.detail });
+  };
+
+  // const handleReAssign = async (reAssignFields: IReassignFields) => {
+  //   try {
+  //     await reAssignRequest({
+  //       body: reAssignFields,
+  //       jobId: clickedJob.farmId,
+  //     }).unwrap();
+  //     onClose();
+  //     messageApi.open({ type: "success", content: t("common.success") });
+  //   } catch (error) {
+  //     messageApi.open({ type: "error", content: getError(error) });
+  //   }
+  // };
+  // console.log(userFarms.content);
+
   return (
     <div className="flex flex-col h-screen ">
       {contextHolder}
+      {/* <ShowFarmDetail id={clickedJob} onClose={onClose} /> */}
       <Header />
       <div className="flex">
         <div>
@@ -125,24 +152,23 @@ const Farm: FC = () => {
               <Button onClick={handleClickOpenCreate}>
                 {t("farmpage.create-button")}
               </Button>
-              {/* <UiDrawer /> */}
             </div>
             <SearchInput />
             <Table
               size="small"
-              loading={isLoading}
+              // loading={isLoading}
               pagination={{
                 pageSize: filter.size,
-                total: userJobs.totalElements,
+                // total: userFarms.totalElements,
                 locale: {
-                  items_per_page: pageLocale[locale],
+                  items_per_page: pageLocale[locale as keyof typeof pageLocale],
                 },
                 onShowSizeChange: (_, size) => changeFilter("size", size),
                 onChange: paginationHandler,
                 pageSizeOptions: [10, 20, 50],
               }}
               columns={columns}
-              dataSource={userJobs.content}
+              dataSource={data}
             />
           </div>
           {/* <Pagination

@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { getSession } from "next-auth/react";
+import { IFarmWithPageable } from "../models/interfaces/farm.interfaces";
 
 const API_URL = "https://almetico.university.kg/cattle-dev";
 
@@ -8,8 +9,14 @@ const getAuthToken = async () => {
   return session?.access_token;
 };
 
+interface IOrganizationParams {
+  page: number;
+  size: number;
+}
+
 export const farmApi = createApi({
   reducerPath: "farmApi",
+  tagTypes: ["farms"],
   baseQuery: fetchBaseQuery({
     baseUrl: API_URL,
 
@@ -22,8 +29,12 @@ export const farmApi = createApi({
     },
   }),
   endpoints: (builder) => ({
-    getFarm: builder.query({
-      query: () => "/farm",
+    getFarm: builder.query<IFarmWithPageable, IOrganizationParams>({
+      query: (params) => ({
+        url: "/farm",
+        params,
+      }),
+      providesTags: ["farms"],
     }),
   }),
 });

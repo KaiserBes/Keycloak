@@ -2,7 +2,7 @@
 
 import { Header } from "@/components/shared/header";
 import { useLocale, useTranslations } from "next-intl";
-import { SquarePlus } from "lucide-react";
+import { Eye, SquarePlus } from "lucide-react";
 import { FC, useState } from "react";
 import { Input } from "@/components/ui/input";
 import SearchInput from "../farm/searchInput";
@@ -81,7 +81,10 @@ const Female: FC = () => {
       render: (_, record) => (
         <Space size="middle">
           <Tooltip title="Посмотреть">
-            <Button onClick={() => handleShowDetail(record.farmId)} />
+            <Button
+              icon={<Eye />}
+              onClick={() => handleShowDetail(record.farmId)}
+            />
           </Tooltip>
 
           <Button
