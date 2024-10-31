@@ -17,6 +17,7 @@
   "farmpage": {
     "title": "Список ферм",
     "create-button": "Создать",
+    "re-assign": "Редактировать",
     "search": "Поиск",
     "reset": "Сброс",
     "farmer": "Фермер",

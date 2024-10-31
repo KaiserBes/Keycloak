@@ -27,8 +27,7 @@ const useFilter = <T extends object>(defaultValues?: T) => {
     });
   };
 
-  const changeSearch = _.debounce((e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e?.target;
+  const changeSearch = _.debounce((name: string, value: string) => {
     changeFilter(name, value);
   }, 800);
 

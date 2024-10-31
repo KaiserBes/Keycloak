@@ -121,12 +121,7 @@ const Male: FC = () => {
   return (
     <div className="flex flex-col h-screen ">
       {contextHolder}
-      <Header />
       <div className="flex">
-        <div>
-          <Sidebar />
-        </div>
-        <div className=""></div>
         <div className="w-full">
           <div className="content-area bg-gray-100 dark:bg-black">
             <div className="w-full flex justify-between items-center mb-2">

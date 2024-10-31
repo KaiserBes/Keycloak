@@ -6,10 +6,13 @@ import { ModeToggle } from "./theme-switcher";
 
 import { useSession } from "next-auth/react";
 import LocalSwitcher from "./local-switcher";
+import { usePathname } from "next/navigation";
 
 export const Header = () => {
   const { data: session } = useSession();
+  const pathname = usePathname();
 
+  if (pathname === "/ru/login") return;
   return (
     <div className="flex justify-between items-center px-5 dark:bg-[#1f1f1f] dark:shadow-md dark:border ">
       <div className="flex gap-3">

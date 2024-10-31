@@ -8,11 +8,7 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-col h-screen ">
-      <Header />
       <div className="flex">
-        <div>
-          <Sidebar />
-        </div>
         <div className="w-full">
           <div className="content-area bg-gray-100 dark:bg-black max-">
             <Canvas />

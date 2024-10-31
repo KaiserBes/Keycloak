@@ -80,7 +80,7 @@ export const authOptions: AuthOptions = {
       if (account) {
         token.access_token = account.access_token;
         token.refresh_token = account.refresh_token;
-        token.expires_at = Date.now() + expiresIn * 1000;
+        token.expires_at = Date.now() + expiresIn * 1000000;
         return token;
       }
 

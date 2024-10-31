@@ -15,6 +15,8 @@ export const Sidebar: React.FC = () => {
   const pathname = usePathname();
   const locale = useLocale();
 
+  if (pathname === "/ru/login") return;
+
   const items = [
     {
       label: t("sidebar.dashboard"),
@@ -85,7 +87,7 @@ export const Sidebar: React.FC = () => {
       >
         <Menu
           className="dark:bg-[#1f1f1f]"
-          selectedKeys={[activeKey]}
+          selectedKeys={activeKey ? [activeKey] : []}
           mode="inline"
           items={items.map((item) => ({
             ...item,

@@ -83,7 +83,7 @@ const Female: FC = () => {
           <Tooltip title="Посмотреть">
             <Button
               icon={<Eye />}
-              onClick={() => handleShowDetail(record.farmId)}
+              onClick={() => handleShowDetail(record.id)}
             />
           </Tooltip>
 
@@ -93,7 +93,7 @@ const Female: FC = () => {
               record.type === "FARM_NUMBER" ||
               record.type === "FARM_STAT_NO"
             }
-            onClick={() => handleShowReAssign(record.farmId)}
+            onClick={() => handleShowReAssign(record.id)}
           >
             {t("common.re-assign")}
           </Button>
@@ -116,12 +116,7 @@ const Female: FC = () => {
   return (
     <div className="flex flex-col h-screen ">
       {contextHolder}
-      <Header />
       <div className="flex">
-        <div>
-          <Sidebar />
-        </div>
-        <div className=""></div>
         <div className="w-full">
           <div className="content-area bg-gray-100 dark:bg-black">
             <div className="w-full flex justify-between items-center mb-2">

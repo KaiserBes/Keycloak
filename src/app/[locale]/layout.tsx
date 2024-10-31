@@ -7,6 +7,8 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import ReduxProviderWrapper from "@/components/shared/reduxProviderWrapper";
 import { ThemeProvider } from "next-themes";
+import { Header } from "@/components/shared/header";
+import { Sidebar } from "@/components/shared/sidebar";
 
 export default async function LocaleLayout({
   children,
@@ -15,27 +17,39 @@ export default async function LocaleLayout({
   children: React.ReactNode;
   params: { locale: string };
 }) {
-  const messages = await getMessages();
-  const session = await getServerSession();
-
   return (
     <html lang={locale}>
       <body>
-        <SessionProviderWrapper session={session}>
-          <NextIntlClientProvider messages={messages}>
-            <ReduxProviderWrapper>
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="system"
-                enableSystem
-                disableTransitionOnChange
-              >
-                {children}
-              </ThemeProvider>
-            </ReduxProviderWrapper>
-          </NextIntlClientProvider>
-        </SessionProviderWrapper>
+        <Providers>
+          <Header />
+          <div className="flex">
+            <Sidebar />
+            <div className="w-full">{children}</div>
+          </div>
+        </Providers>
       </body>
     </html>
   );
 }
+
+const Providers = async ({ children }: { children: React.ReactNode }) => {
+  const messages = await getMessages();
+  const session = await getServerSession();
+
+  return (
+    <SessionProviderWrapper session={session}>
+      <NextIntlClientProvider messages={messages}>
+        <ReduxProviderWrapper>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+        </ReduxProviderWrapper>
+      </NextIntlClientProvider>
+    </SessionProviderWrapper>
+  );
+};

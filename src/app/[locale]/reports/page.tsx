@@ -16,7 +16,6 @@ import useFilter from "@/hooks/useFilter";
 import { useSearchParams } from "next/navigation";
 import { useGetFarmQuery } from "@/store/services/farmApi";
 import { Sidebar } from "@/components/shared/sidebar";
-import UiDrawer from "@/components/shared/drawer";
 import { IFarm } from "@/store/models/interfaces/farm.interfaces";
 import dayjs from "dayjs";
 
@@ -103,12 +102,7 @@ const Reports: FC = () => {
   return (
     <div className="flex flex-col h-screen ">
       {contextHolder}
-      <Header />
       <div className="flex">
-        <div>
-          <Sidebar />
-        </div>
-        <div className=""></div>
         <div className="w-full">
           <div className="content-area bg-gray-100 dark:bg-black">
             <div className="w-full flex justify-between items-center mb-2">
@@ -134,11 +128,6 @@ const Reports: FC = () => {
               dataSource={userJobs.content}
             />
           </div>
-          {/* <Pagination
-            className="flex justify-end mt-5 mr-2"
-            defaultCurrent={6}
-            total={500}
-          /> */}
         </div>
       </div>
     </div>
