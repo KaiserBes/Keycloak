@@ -4,7 +4,7 @@ interface Performer {
 }
 
 export interface IFarm {
-  id: string;
+  id: number;
   performer: Performer;
   type: string;
   title: string;
@@ -13,7 +13,7 @@ export interface IFarm {
   response: string | null;
   localityId: number;
   place: string;
-  personId: number;
+  personId: string;
   personTitle: string;
   personAddress: string;
   personContacts: string;

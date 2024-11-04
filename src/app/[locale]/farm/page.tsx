@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { SquarePlus } from "lucide-react";
-import { FC, useState } from "react";
+import React, { FC, useState, useCallback, useEffect } from "react";
 import { Input } from "antd";
 
 import { Button, Space, Table, TableProps, Tooltip, message } from "antd";
@@ -22,6 +22,7 @@ import {
 } from "@/store/models/interfaces/farm.interfaces";
 import { FarmState } from "@/store/models/enums/general";
 import { getError } from "@/lib/general";
+import _ from "lodash";
 
 const pageLocale = {
   ru: "размер",
@@ -43,6 +44,7 @@ const initValueClickedJob = "";
 const Farm: FC = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const locale = useLocale() as Locale;
+  const t = useTranslations();
 
   const searchParams = useSearchParams();
   const [clickedFarm, setIdClickedFarm] = useState({
@@ -54,12 +56,37 @@ const Farm: FC = () => {
   const [reAssignRequest, { isLoading: isLoadingReAssign }] =
     useReAssignPerformerMutation();
 
-  const { paginationHandler, filter, changeFilter, changeSearch } =
-    useFilter<IFilter>({
-      page: Number(searchParams.get("page")) || 0,
-      size: Number(searchParams.get("size")) || 10,
-    });
-  const t = useTranslations();
+  const { paginationHandler, filter, changeFilter } = useFilter<IFilter>({
+    page: Number(searchParams.get("page")) || 0,
+    size: Number(searchParams.get("size")) || 10,
+    name: "",
+  });
+
+  const [allFarms, setAllFarms] = useState<IFarm[]>([]);
+  const [filteredFarms, setFilteredFarms] = useState<IFarm[]>([]);
+
+  const { data, isFetching } = useGetFarmsQuery(farmState, {
+    refetchOnMountOrArgChange: true,
+    ...filter,
+  });
+
+  useEffect(() => {
+    if (data && Array.isArray(data)) {
+      setAllFarms(data as IFarm[]);
+      setFilteredFarms(data as IFarm[]);
+    }
+  }, [data]);
+
+  const handleSearch = useCallback(
+    _.debounce((e) => {
+      const value = e.target.value.toLowerCase();
+      const filteredData = allFarms.filter((farm) =>
+        farm.personTitle.toLowerCase().includes(value)
+      );
+      setFilteredFarms(filteredData);
+    }, 300),
+    [allFarms]
+  );
 
   const columns: TableProps<IFarm>["columns"] = [
     {
@@ -74,7 +101,6 @@ const Farm: FC = () => {
       key: "personId",
       render: (_, data) => <p>{data?.localityTitle}</p>,
     },
-
     {
       title: t("farmpage.try"),
       key: "action",
@@ -99,23 +125,10 @@ const Farm: FC = () => {
     },
   ];
 
-  const { data, isFetching } = useGetFarmsQuery(farmState, {
-    refetchOnMountOrArgChange: true,
-  });
-  // const {
-  //   data = {
-  //     totalElements: 0,
-  //     content: [],
-  //   },
-  //   isLoading,
-  //   isError,
-  //   error,
-  // } = useGetFarmsQuery({ ...filter }, { refetchOnMountOrArgChange: true });
-
-  const handleShowDetail = (id: string) => {
+  const handleShowDetail = (id: any) => {
     setIdClickedFarm({ farmId: id, type: ModalType.detail });
   };
-  const handleShowReAssign = (id: string) => {
+  const handleShowReAssign = (id: any) => {
     setIdClickedFarm({ farmId: id, type: ModalType.reAssign });
   };
   const router = useRouter();
@@ -133,7 +146,6 @@ const Farm: FC = () => {
         body: reAssignFields,
         farmId: clickedFarm.farmId,
       }).unwrap();
-      onClose();
       messageApi.open({ type: "success", content: t("common.success") });
     } catch (error) {
       messageApi.open({ type: "error", content: getError(error) });
@@ -143,7 +155,6 @@ const Farm: FC = () => {
   return (
     <div className="flex flex-col h-screen ">
       {contextHolder}
-      {/* <ShowFarmDetail id={clickedJob} onClose={onClose} /> */}
       <div className="flex">
         <div className="w-full">
           <div className="content-area bg-gray-100 dark:bg-black">
@@ -156,10 +167,9 @@ const Farm: FC = () => {
               </Button>
             </div>
             <Input
-              className="w-full"
-              allowClear
-              name="q"
-              onChange={changeSearch}
+              name="name"
+              placeholder="Поиск по фермеру"
+              onChange={handleSearch}
             />
             <Table
               bordered
@@ -177,7 +187,7 @@ const Farm: FC = () => {
                 pageSizeOptions: [10, 20, 50],
               }}
               columns={columns}
-              dataSource={data}
+              dataSource={filteredFarms}
             />
           </div>
         </div>

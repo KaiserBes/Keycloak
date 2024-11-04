@@ -1,28 +1,23 @@
 "use client";
 
-import React, { FC, useState } from "react";
+import React from "react";
 import { Button, Form, Input, Select } from "antd";
 import { useLocale, useTranslations } from "next-intl";
 import { useCreateFarmMutation } from "@/store/services/farmApi";
 import toast from "react-hot-toast";
-import { IOrganizationTypes } from "@/store/models/interfaces/base.interfaces";
 import { getError } from "@/lib/general";
-
 import BackButton from "@/components/shared/createBackButton";
 import { useGetLocalityQuery } from "@/store/services/localityApi";
-import { FarmState } from "@/store/models/enums/general";
-import _, { debounce } from "lodash";
+import _ from "lodash";
+import { Locale } from "@/lib/locales";
+import { useRouter } from "next/navigation";
 
-interface IProps {
-  onClose: () => void;
-  organizationType: IOrganizationTypes[];
-}
-
-const CreateFarmerPage: FC<IProps> = ({ onClose }) => {
+const CreateFarmerPage = () => {
   const t = useTranslations();
-
-  const [farmState, setFarmState] = useState<string>(FarmState.STARTED);
   const [form] = Form.useForm<any>();
+  const locale = useLocale() as Locale;
+
+  const router = useRouter();
 
   const [createFarm, { isLoading: isLoadingAdd }] = useCreateFarmMutation();
 
@@ -30,54 +25,40 @@ const CreateFarmerPage: FC<IProps> = ({ onClose }) => {
 
   const { data: localities, isFetching } = useGetLocalityQuery(searchQuery);
 
+  const formRules = {
+    personTitle: [{ required: true, message: "Введите Фермера" }],
+    personId: [{ required: true, message: "Выберите пункт" }],
+  };
+
   const onFinish = async (values: any) => {
     try {
-      await createFarm(values).unwrap();
+      await createFarm({ ...values, localityTitle: "" }).unwrap();
       toast.success("Фермер успешно создан");
-      onClose();
+      router.push(`/${locale}/farm`);
       form.resetFields();
     } catch (error) {
-      console.error("CreateFarm Error:", error);
       toast.error(getError(error));
     }
   };
 
   const handleSearch = _.debounce((value: string) => {
     setSearchQuery(value);
-  }, 600);
-
-  console.log("localities:", localities);
+  }, 400);
 
   return (
     <div className="flex min-h-screen">
       <div className="flex-1 p-6">
         <BackButton />
-
         <Form id="farm" layout="vertical" form={form} onFinish={onFinish}>
-          <Form.Item
-            name="personTitle"
-            label="Фермер"
-            rules={[
-              {
-                required: true,
-                message: "Введите Фермера",
-              },
-            ]}
-          >
+          <Form.Item name="title" label="Фермер" rules={formRules.personTitle}>
             <Input />
           </Form.Item>
           <Form.Item
-            name="personId"
+            name="localityId"
             label="Населенный пункт"
-            rules={[
-              {
-                required: true,
-                message: "Выберите пункт",
-              },
-            ]}
+            rules={formRules.personId}
           >
             <Select
-              mode="multiple"
               showSearch
               onSearch={handleSearch}
               loading={isFetching}
@@ -85,7 +66,7 @@ const CreateFarmerPage: FC<IProps> = ({ onClose }) => {
               filterOption={false}
             >
               {localities?.map((locality) => (
-                <Select.Option key={locality.key} value={locality.value}>
+                <Select.Option key={locality.key} value={locality.key}>
                   {locality.value}
                 </Select.Option>
               ))}
@@ -94,17 +75,23 @@ const CreateFarmerPage: FC<IProps> = ({ onClose }) => {
           <Form.Item name="personAddress" label="Адрес фермера">
             <Input />
           </Form.Item>
-          <Form.Item name="INN" label="ИНН фермера">
+          <Form.Item name="personId" label="ИНН фермера">
             <Input />
           </Form.Item>
           <Form.Item name="personContacts" label="Контакты">
             <Input />
           </Form.Item>
-          <div className="flex justify-end">
-            <Button key="submit" type="primary" form="farm" htmlType="submit">
+          <Form.Item>
+            <Button
+              className="mt-4"
+              type="primary"
+              form="farm"
+              loading={isLoadingAdd}
+              htmlType="submit"
+            >
               Сохранить
             </Button>
-          </div>
+          </Form.Item>
         </Form>
       </div>
     </div>

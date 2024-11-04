@@ -9,6 +9,7 @@ import ReduxProviderWrapper from "@/components/shared/reduxProviderWrapper";
 import { ThemeProvider } from "next-themes";
 import { Header } from "@/components/shared/header";
 import { Sidebar } from "@/components/shared/sidebar";
+import { Toaster } from "react-hot-toast";
 
 export default async function LocaleLayout({
   children,
@@ -21,6 +22,7 @@ export default async function LocaleLayout({
     <html lang={locale}>
       <body>
         <Providers>
+          <Toaster position="top-center" reverseOrder={false} />
           <Header />
           <div className="flex">
             <Sidebar />

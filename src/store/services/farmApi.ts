@@ -50,7 +50,7 @@ export const farmApi = createApi({
     }),
     createFarm: builder.mutation<void, any>({
       query: (body) => ({
-        url: `/farm`,
+        url: "/farm",
         method: "POST",
         body,
       }),
