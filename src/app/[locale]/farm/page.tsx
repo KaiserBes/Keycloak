@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { SquarePlus } from "lucide-react";
+
 import React, { FC, useState, useCallback, useEffect } from "react";
 import { Input } from "antd";
 
@@ -23,6 +23,8 @@ import {
 import { FarmState } from "@/store/models/enums/general";
 import { getError } from "@/lib/general";
 import _ from "lodash";
+import Link from "next/link";
+import EditFarmerPage from "./edit/[id]/page";
 
 const pageLocale = {
   ru: "размер",
@@ -110,16 +112,9 @@ const Farm: FC = () => {
             <Button onClick={() => handleShowDetail(record.id)} />
           </Tooltip>
 
-          <Button
-            disabled={
-              record.type === "FARM_TIN" ||
-              record.type === "FARM_NUMBER" ||
-              record.type === "FARM_STAT_NO"
-            }
-            onClick={() => handleShowReAssign(record.id)}
-          >
-            {t("farmpage.re-assign")}
-          </Button>
+          <Link href={`/${locale}/farm/edit/${record.id}`}>
+            <Button>{t("common.edit")}</Button>
+          </Link>
         </Space>
       ),
     },

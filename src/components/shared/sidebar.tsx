@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Layout, Menu } from "antd";
+import { Button, Layout, Menu } from "antd";
 import { ApiTwoTone, BarsOutlined } from "@ant-design/icons";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
+import { signOut } from "next-auth/react";
+import path from "path";
 
 const { Sider } = Layout;
 
@@ -66,13 +68,11 @@ export const Sidebar: React.FC = () => {
       icon: <BarsOutlined style={{ color: "purple" }} />,
       path: `/${locale}/reports`,
     },
-    {
-      label: t("sidebar.quit"),
-      key: "9",
-      icon: <ApiTwoTone style={{ color: "purple" }} />,
-      path: `/${locale}/login`,
-    },
   ];
+
+  const handleSignOut = async () => {
+    await signOut({ redirect: true, callbackUrl: "/" });
+  };
 
   const activeKey = items.find((item) => pathname.startsWith(item.path))?.key;
 
@@ -98,6 +98,11 @@ export const Sidebar: React.FC = () => {
             ),
           }))}
         />
+        <div className="w-full py-3 px-5">
+          <Button className="w-full " danger href="" onClick={handleSignOut}>
+            {t("sidebar.quit")}
+          </Button>
+        </div>
       </Sider>
     </Layout>
   );

@@ -21,6 +21,7 @@ export interface Title {
 export interface ILocality {
   key: number;
   value: string;
+  localityTitle: string;
 }
 
 export interface ITreeData {

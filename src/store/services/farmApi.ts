@@ -31,9 +31,9 @@ export const farmApi = createApi({
       }),
       providesTags: ["farms"],
     }),
-    getFarmById: builder.query<IFarmByState, string>({
-      query: (farmId) => ({
-        url: `/farm/${farmId}`,
+    getFarmById: builder.query<IFarmByState, any>({
+      query: (id) => ({
+        url: `/farm/${id}`,
       }),
       providesTags: ["farms"],
     }),
@@ -42,8 +42,8 @@ export const farmApi = createApi({
       { body: IReassignFields; farmId: string }
     >({
       query: ({ body, farmId }) => ({
-        url: `/farm/${farmId}/reassign`,
-        method: "PUT",
+        url: `/farm/${farmId}`,
+        method: "PATCH",
         body,
       }),
       invalidatesTags: ["farms"],
@@ -56,12 +56,30 @@ export const farmApi = createApi({
       }),
       invalidatesTags: ["farms"],
     }),
+    updateFarm: builder.mutation<void, any>({
+      query: ({ id, ...farm }) => ({
+        url: `/farm/${id}`,
+        method: "PATCH",
+        body: farm,
+      }),
+      invalidatesTags: ["farms"],
+    }),
+    deleteFarm: builder.mutation<void, any>({
+      query: (id) => ({
+        url: `/farm/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["farms"],
+    }),
   }),
 });
 
 export const {
   useGetFarmsQuery,
-  useReAssignPerformerMutation,
   useGetFarmByIdQuery,
+
+  useReAssignPerformerMutation,
+  useDeleteFarmMutation,
+  useUpdateFarmMutation,
   useCreateFarmMutation,
 } = farmApi;

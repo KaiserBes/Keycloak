@@ -1,4 +1,15 @@
 {
+  "common": {
+    "back": "Артка",
+    "edit": "Кароо",
+    "show": "Оңдоо",
+    "delete": "Жоготуу",
+    "reload": "Жаңылоо",
+    "open": "Ачуу",
+    "search": "Издөө",
+    "create": "Түзүү",
+    "save": "Сактоо"
+  },
   "sidebar": {
     "dashboard": "Башы",
     "farm": "Фермерлер",
