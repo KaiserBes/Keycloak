@@ -32,3 +32,7 @@ export interface ITreeData {
   selectable: boolean;
   isLeaf: boolean;
 }
+export interface IDashboard {
+  type: string;
+  count: number;
+}

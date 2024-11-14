@@ -24,7 +24,7 @@ import { FarmState } from "@/store/models/enums/general";
 import { getError } from "@/lib/general";
 import _ from "lodash";
 import Link from "next/link";
-import EditFarmerPage from "./edit/[id]/page";
+import { Eye } from "lucide-react";
 
 const pageLocale = {
   ru: "размер",
@@ -33,7 +33,7 @@ const pageLocale = {
 interface IFilter {
   page: number;
   size: number;
-  name?: string;
+  title?: string;
 }
 
 export enum ModalType {
@@ -58,11 +58,11 @@ const Farm: FC = () => {
   const [reAssignRequest, { isLoading: isLoadingReAssign }] =
     useReAssignPerformerMutation();
 
-  const { paginationHandler, filter, changeFilter } = useFilter<IFilter>({
-    page: Number(searchParams.get("page")) || 0,
-    size: Number(searchParams.get("size")) || 10,
-    name: "",
-  });
+  const { paginationHandler, filter, changeFilter, changeSearch } =
+    useFilter<IFilter>({
+      page: Number(searchParams.get("page")) || 0,
+      size: Number(searchParams.get("size")) || 10,
+    });
 
   const [allFarms, setAllFarms] = useState<IFarm[]>([]);
   const [filteredFarms, setFilteredFarms] = useState<IFarm[]>([]);
@@ -78,6 +78,8 @@ const Farm: FC = () => {
       setFilteredFarms(data as IFarm[]);
     }
   }, [data]);
+
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearch = useCallback(
     _.debounce((e) => {
@@ -108,9 +110,11 @@ const Farm: FC = () => {
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <Tooltip title="Посмотреть">
-            <Button onClick={() => handleShowDetail(record.id)} />
-          </Tooltip>
+          <Link href={`/${locale}/farm/show/${record.id}`}>
+            <Tooltip title="Посмотреть">
+              <Button icon={<Eye className="w-4 h-4" />} />
+            </Tooltip>
+          </Link>
 
           <Link href={`/${locale}/farm/edit/${record.id}`}>
             <Button>{t("common.edit")}</Button>

@@ -29,7 +29,7 @@ const useFilter = <T extends object>(defaultValues?: T) => {
 
   const changeSearch = _.debounce((name: string, value: string) => {
     changeFilter(name, value);
-  }, 800);
+  }, 400);
 
   return {
     filter,

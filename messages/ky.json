@@ -27,6 +27,8 @@
   },
   "farmpage": {
     "title": "Тизме",
+    "address": "Адрес",
+    "list": "Фермадагы жаныбарлар",
     "re-assign": "Оңдоо",
     "create-button": "Түзүү",
     "search": "Издөө",

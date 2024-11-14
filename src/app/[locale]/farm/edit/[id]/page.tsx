@@ -42,7 +42,7 @@ const EditFarmerPage = () => {
       form.setFieldsValue({
         title: selectedEdit.title || "",
         localityId: selectedEdit.localityTitle || "",
-        personAddress: selectedEdit.personAddress || "",
+        personAddress: selectedEdit.personAddress,
         personId: selectedEdit.personId || "",
         personContacts: selectedEdit.personContacts || "",
       });
@@ -68,7 +68,6 @@ const EditFarmerPage = () => {
       toast.error(getError(error));
     }
   };
-  console.log("selectedEdit:", selectedEdit);
 
   return (
     <div className="flex min-h-screen">
