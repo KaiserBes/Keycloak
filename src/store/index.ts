@@ -5,6 +5,10 @@ import { localityApi } from "./services/localityApi";
 import { personApi } from "./services/personApi";
 import { petApi } from "./services/petApi";
 import { dashboardApi } from "./services/dashboard";
+import { maleApi } from "./services/maleApi";
+import { breedApi } from "./services/breedApi";
+import { suitApi } from "./services/suitApi";
+import { countryApi } from "./services/countryApi";
 
 const store = configureStore({
   reducer: {
@@ -14,6 +18,10 @@ const store = configureStore({
     [personApi.reducerPath]: personApi.reducer,
     [petApi.reducerPath]: petApi.reducer,
     [dashboardApi.reducerPath]: dashboardApi.reducer,
+    [maleApi.reducerPath]: maleApi.reducer,
+    [breedApi.reducerPath]: breedApi.reducer,
+    [suitApi.reducerPath]: suitApi.reducer,
+    [countryApi.reducerPath]: countryApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat([
@@ -22,6 +30,10 @@ const store = configureStore({
       personApi.middleware,
       petApi.middleware,
       dashboardApi.middleware,
+      maleApi.middleware,
+      breedApi.middleware,
+      suitApi.middleware,
+      countryApi.middleware,
     ]),
 });
 

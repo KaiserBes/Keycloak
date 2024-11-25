@@ -1,5 +1,5 @@
-import { Button, Modal, Radio } from "antd";
-import { useLocale, useTranslations } from "next-intl";
+import { Button, Modal } from "antd";
+import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { FC, useState } from "react";
@@ -13,7 +13,7 @@ const ViewerPdf = dynamic(() => import("@/components/shared/viewer-pdf"), {
 const ViewDocuments: FC<{ certificateId: string; certificateType: string }> = ({
   certificateId,
 }) => {
-  const [indexSelectedDocument, setIndexSelectedDocument] = useState(0);
+  const [indexSelectedDocument] = useState(0);
   const [isOpen, setOpen] = useState(false);
 
   const { data: docsList = [] } = useGetDocsByStatementIdQuery(

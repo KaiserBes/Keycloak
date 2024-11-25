@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { Button, Layout, Menu } from "antd";
-import { ApiTwoTone, BarsOutlined } from "@ant-design/icons";
+import { BarsOutlined } from "@ant-design/icons";
 import Link from "next/link";
-import { redirect, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { signOut } from "next-auth/react";
-import path from "path";
+import { AlignEndHorizontal } from "lucide-react";
 
 const { Sider } = Layout;
 
@@ -45,28 +45,16 @@ export const Sidebar: React.FC = () => {
       path: `/${locale}/male`,
     },
     {
-      label: t("sidebar.female"),
-      key: "5",
-      icon: <BarsOutlined style={{ color: "purple" }} />,
-      path: `/${locale}/female`,
-    },
-    {
       label: t("sidebar.breeds"),
       key: "6",
       icon: <BarsOutlined style={{ color: "purple" }} />,
-      path: `/${locale}/breeds`,
+      path: `/${locale}/breed`,
     },
     {
       label: t("sidebar.suit"),
       key: "7",
       icon: <BarsOutlined style={{ color: "purple" }} />,
       path: `/${locale}/suit`,
-    },
-    {
-      label: t("sidebar.reports"),
-      key: "8",
-      icon: <BarsOutlined style={{ color: "purple" }} />,
-      path: `/${locale}/reports`,
     },
   ];
 
@@ -77,14 +65,19 @@ export const Sidebar: React.FC = () => {
   const activeKey = items.find((item) => pathname.startsWith(item.path))?.key;
 
   return (
-    <Layout className="flex-none" style={{ minHeight: "100vh" }}>
+    <Layout className="flex" style={{ minHeight: "100vh" }}>
       <Sider
         width={200}
         collapsible
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
-        className="bg-white dark:bg-[#1f1f1f]"
+        className="bg-white dark:bg-[#1f1f1f] fixed left-0 top-0 bottom-0"
+        style={{ height: "100vh" }}
       >
+        <div className="flex px-6 mt-5 mb-2 gap-3 items-center">
+          <AlignEndHorizontal className="text-blue-600" />
+          <span className="font-semibold">Система учета</span>
+        </div>
         <Menu
           className="dark:bg-[#1f1f1f]"
           selectedKeys={activeKey ? [activeKey] : []}
@@ -99,11 +92,12 @@ export const Sidebar: React.FC = () => {
           }))}
         />
         <div className="w-full py-3 px-5">
-          <Button className="w-full " danger href="" onClick={handleSignOut}>
+          <Button className="w-full" danger href="" onClick={handleSignOut}>
             {t("sidebar.quit")}
           </Button>
         </div>
       </Sider>
+      <Layout style={{ marginLeft: collapsed ? 80 : 200 }}></Layout>
     </Layout>
   );
 };

@@ -1,7 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { ILocality } from "@/store/models/interfaces/base.interfaces";
 import { getSession } from "next-auth/react";
-import { IBreed } from "../models/interfaces/breed.interfaces";
 import {
   IDocsListByStatementId,
   IPet,
@@ -35,6 +33,12 @@ export const petApi = createApi({
       },
       providesTags: ["pet"],
     }),
+    getPetById: builder.query<IPet, any>({
+      query: (id) => ({
+        url: `/pet/${id}`,
+      }),
+      providesTags: ["pet"],
+    }),
     addPet: builder.mutation<void, any>({
       query: (body) => ({
         url: "/pet",
@@ -56,13 +60,22 @@ export const petApi = createApi({
         url: `/pet/${petPdfId}/preview`,
       }),
     }),
+    deletePet: builder.mutation<void, any>({
+      query: (id) => ({
+        url: `/pet/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["pet"],
+    }),
   }),
 });
 
 export const {
   useAddPetMutation,
   useGetPetQuery,
+  useGetPetByIdQuery,
 
+  useDeletePetMutation,
   useUpdatePetMutation,
   useGetDocsByStatementIdQuery,
 } = petApi;

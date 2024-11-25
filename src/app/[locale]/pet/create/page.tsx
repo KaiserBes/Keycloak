@@ -1,113 +1,209 @@
 "use client";
 
-import React from "react";
-import { Button, Input, Select } from "antd";
-import { Sidebar } from "@/components/shared/sidebar";
-import { Header } from "@/components/shared/header";
+import { Button, Card, DatePicker, Form, Input, Select } from "antd";
 import { useTranslations } from "next-intl";
-import BackButton from "@/components/shared/createBackButton";
+import { FC } from "react";
+import toast from "react-hot-toast";
 
-const CreatePetPage = () => {
+import { getError } from "@/lib/general";
+import { useAddPetMutation } from "@/store/services/petApi";
+import dayjs from "dayjs";
+import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
+
+const CreatePet: FC = () => {
   const t = useTranslations();
+  const [form] = Form.useForm<any>();
+  const dateFormat = "YYYY-MM-DD";
+  const [addPet, { isLoading: isLoadingAdd }] = useAddPetMutation();
+
+  const router = useRouter();
+
+  const onFinish = async (values: any) => {
+    try {
+      await addPet({
+        ...values,
+        date: values?.date
+          ? values.date?.format("YYYY-MM-DD")
+          : dayjs("2023-01-01", dateFormat),
+      }).unwrap();
+      toast.success(t("common.success"));
+
+      form.resetFields();
+    } catch (error) {
+      toast.error(getError(error));
+    }
+  };
+
+  const genderOptions = [
+    { value: "MALE", label: "Самец" },
+    { value: "FEMALE", label: "Самка" },
+  ];
+
+  const breedOptions = [
+    { label: "Симментальская", value: "breed1" },
+    { label: "Голштинская", value: "breed2" },
+    { label: "Шароле", value: "breed3" },
+    { label: "Холмогорская", value: "breed4" },
+    { label: "Абердин-Ангусская", value: "breed5" },
+    { label: "Неизвестная", value: "breed6" },
+  ];
+
+  const suitOptions = [
+    { label: "Бурая", value: "suit1" },
+    { label: "Кориченевая", value: "suit2" },
+    { label: "Красная", value: "suit3" },
+    { label: "Красно-пестрая", value: "suit4" },
+    { label: "Пестрая", value: "suit5" },
+    { label: "Рыжая", value: "suit6" },
+  ];
+
+  const fatherOptions = [
+    { label: "Гендельф", value: "father1" },
+    { label: "Зевс", value: "father2" },
+    { label: "Париж", value: "father3" },
+    { label: "Сункар", value: "father4" },
+    { label: "Лев", value: "father5" },
+  ];
 
   return (
-    <>
-      <Header />
-      <div className="flex min-h-screen">
-        <Sidebar />
-
-        <div className="flex-1 p-6">
-          <BackButton />
-          <form className="space-y-6">
-            <div>
-              <label
-                htmlFor="farmer"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Фермер
-              </label>
-              <Input
-                type="text"
-                id="farmer"
-                name="farmer"
-                className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Введите имя фермера"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="locality"
-                className="block text-sm font-medium text-gray-700"
-              >
-                {t("farmpage.paragraph")}
-              </label>
-              <Select
-                id="locality"
-                className="w-full"
-                placeholder="Select a locality"
-              >
-                <option value="locality1">Населённый пункт 1</option>
-                <option value="locality2">Населённый пункт 2</option>
-              </Select>
-            </div>
-
-            <div>
-              <label
-                htmlFor="address"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Адрес фермера
-              </label>
-              <Input
-                type="text"
-                id="address"
-                name="address"
-                className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Введите адрес"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="inn"
-                className="block text-sm font-medium text-gray-700"
-              >
-                ИНН фермера
-              </label>
-              <Input
-                type="text"
-                id="inn"
-                name="inn"
-                className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Введите ИНН"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="contacts"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Контакты
-              </label>
-              <Input
-                type="text"
-                id="contacts"
-                name="contacts"
-                className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Введите контакты"
-              />
-            </div>
-
-            <div className="flex justify-end">
-              <Button>Сохранить</Button>
-            </div>
-          </form>
+    <div className="flex min-h-screen ">
+      <div className="flex-1 ">
+        <div className="m ">
+          <Button
+            onClick={() => router.back()}
+            type="link"
+            loading={isLoadingAdd}
+            icon={<ArrowLeft />}
+          >
+            {t("common.back")}
+          </Button>
         </div>
+        <Form
+          className="p-6"
+          id="pet-add"
+          layout="vertical"
+          form={form}
+          onFinish={onFinish}
+        >
+          <Form.Item
+            rules={[
+              {
+                required: true,
+                message: "Введите кличку",
+              },
+            ]}
+            name="title"
+            label={"Кличка"}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            rules={[
+              {
+                required: true,
+                message: "Введите дату рождения",
+              },
+            ]}
+            name="birthDate"
+            label={"Дата рождения"}
+          >
+            <DatePicker format={dateFormat} />
+          </Form.Item>
+          <Form.Item
+            name="gender"
+            label="Пол"
+            rules={[
+              {
+                required: true,
+                message: "Выберите пол",
+              },
+            ]}
+          >
+            <Select options={genderOptions} />
+          </Form.Item>
+          <Form.Item
+            rules={[
+              {
+                required: true,
+                message: "Введите Ид.номер",
+              },
+            ]}
+            name="number"
+            label={"Ид.номер"}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="breedTitle"
+            label="Порода"
+            rules={[
+              {
+                required: true,
+                message: "Выберите породу",
+              },
+            ]}
+          >
+            <Select options={breedOptions} />
+          </Form.Item>
+          <Form.Item
+            name="suitTitle"
+            label="Масть"
+            rules={[
+              {
+                required: true,
+                message: "Выберите масть",
+              },
+            ]}
+          >
+            <Select options={suitOptions} />
+          </Form.Item>
+          <Card title="Информация об отце">
+            <Form.Item name="fatherTitle" label="Батыр">
+              <Select options={fatherOptions} />
+            </Form.Item>
+          </Card>
+          <Card title="Информация о матери">
+            <Form.Item name="motherId" label={"Ид.номер"}>
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="motherBreed"
+              label="Порода"
+              rules={[
+                {
+                  required: true,
+                  message: "Выберите породу",
+                },
+              ]}
+            >
+              <Select options={breedOptions} />
+            </Form.Item>
+            <Form.Item
+              name="motherSuit"
+              label="Масть"
+              rules={[
+                {
+                  required: true,
+                  message: "Выберите масть",
+                },
+              ]}
+            >
+              <Select options={suitOptions} />
+            </Form.Item>
+            <Button
+              form="pet-add"
+              htmlType="submit"
+              type="primary"
+              loading={isLoadingAdd}
+            >
+              {t("common.save")}
+            </Button>
+          </Card>
+        </Form>
       </div>
-    </>
+    </div>
   );
 };
 
-export default CreatePetPage;
+export default CreatePet;

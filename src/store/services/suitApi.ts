@@ -1,12 +1,13 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
 import { getSession } from "next-auth/react";
-import { IBreed } from "../models/interfaces/breed.interfaces";
+import { ISuit } from "../models/interfaces/base.interfaces";
 
 const API_URL = "https://almetico.university.kg/cattle-dev";
 
-export const breedApi = createApi({
-  reducerPath: "breedApi",
-  tagTypes: ["breed"],
+export const suitApi = createApi({
+  reducerPath: "suitApi",
+  tagTypes: ["suitApi"],
   baseQuery: fetchBaseQuery({
     baseUrl: API_URL,
     prepareHeaders: async (headers) => {
@@ -20,46 +21,46 @@ export const breedApi = createApi({
   }),
 
   endpoints: (builder) => ({
-    getBreed: builder.query<IBreed[], string>({
-      query: () => `/breed`,
-      providesTags: ["breed"],
+    getSuit: builder.query<ISuit[], string>({
+      query: () => `/suit`,
+      providesTags: ["suitApi"],
     }),
-    getBreedById: builder.query<IBreed, any>({
+    getSuitById: builder.query<ISuit, any>({
       query: (id) => ({
-        url: `/breed/${id}`,
+        url: `/suit/${id}`,
       }),
-      providesTags: ["breed"],
+      providesTags: ["suitApi"],
     }),
-    createBreed: builder.mutation<IBreed, any>({
+    createSuit: builder.mutation<ISuit, any>({
       query: (body) => ({
-        url: "/breed",
+        url: "/suit",
         method: "POST",
         body,
       }),
-      invalidatesTags: ["breed"],
+      invalidatesTags: ["suitApi"],
     }),
-    updateBreed: builder.mutation<void, any>({
+    updateSuit: builder.mutation<void, any>({
       query: ({ id, ...suit }) => ({
-        url: `/breed/${id}`,
+        url: `/suit/${id}`,
         method: "PATCH",
         body: suit,
       }),
-      invalidatesTags: ["breed"],
+      invalidatesTags: ["suitApi"],
     }),
-    deleteBreed: builder.mutation<void, any>({
+    deleteSuit: builder.mutation<void, any>({
       query: (id) => ({
-        url: `/breed/${id}`,
+        url: `/suit/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["breed"],
+      invalidatesTags: ["suitApi"],
     }),
   }),
 });
 
 export const {
-  useCreateBreedMutation,
-  useDeleteBreedMutation,
-  useGetBreedQuery,
-  useGetBreedByIdQuery,
-  useUpdateBreedMutation,
-} = breedApi;
+  useGetSuitQuery,
+  useCreateSuitMutation,
+  useDeleteSuitMutation,
+  useGetSuitByIdQuery,
+  useUpdateSuitMutation,
+} = suitApi;

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Button, Form, Input, Select } from "antd";
-import { useLocale, useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 import { useCreateFarmMutation } from "@/store/services/farmApi";
 import toast from "react-hot-toast";
 import { getError } from "@/lib/general";
@@ -13,8 +13,7 @@ import { Locale } from "@/lib/locales";
 import { useRouter } from "next/navigation";
 
 const CreateFarmerPage = () => {
-  const t = useTranslations();
-  const [form] = Form.useForm<any>();
+  const [form] = Form.useForm<string>();
   const locale = useLocale() as Locale;
 
   const router = useRouter();

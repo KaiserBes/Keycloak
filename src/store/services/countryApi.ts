@@ -1,12 +1,13 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { IDashboard } from "@/store/models/interfaces/base.interfaces";
+
 import { getSession } from "next-auth/react";
+import { ICountry } from "../models/interfaces/base.interfaces";
 
 const API_URL = "https://almetico.university.kg/cattle-dev";
 
-export const dashboardApi = createApi({
-  reducerPath: "dashboardApi",
-  tagTypes: ["dashboardApi"],
+export const countryApi = createApi({
+  reducerPath: "countryApi",
+  tagTypes: ["countryApi"],
   baseQuery: fetchBaseQuery({
     baseUrl: API_URL,
     prepareHeaders: async (headers) => {
@@ -20,11 +21,11 @@ export const dashboardApi = createApi({
   }),
 
   endpoints: (builder) => ({
-    getDashboard: builder.query<IDashboard[], string>({
-      query: () => `/dashboard`,
-      providesTags: ["dashboardApi"],
+    getCountry: builder.query<ICountry[], string>({
+      query: (searchQuery = "") => `/country?title_like=${searchQuery}`,
+      providesTags: ["countryApi"],
     }),
   }),
 });
 
-export const { useGetDashboardQuery } = dashboardApi;
+export const { useGetCountryQuery } = countryApi;

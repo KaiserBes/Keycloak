@@ -6,6 +6,7 @@ interface Performer {
 export interface IFarm {
   id: number;
   title: string;
+  values: string;
   localityTitle: string;
   localityId: number;
   place: string;

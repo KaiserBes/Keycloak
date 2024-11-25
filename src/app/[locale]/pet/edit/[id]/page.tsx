@@ -1,24 +1,33 @@
-import { Button, Card, DatePicker, Form, Input, Modal, Select } from "antd";
+"use client";
+
+import { Button, Card, DatePicker, Form, Input, Select } from "antd";
 import { useTranslations } from "next-intl";
 import { FC, useEffect } from "react";
 import toast from "react-hot-toast";
 
 import { getError } from "@/lib/general";
 
-import { IPet } from "@/store/models/interfaces/pet.interfaces";
-import { useUpdatePetMutation } from "@/store/services/petApi";
+import {
+  useGetPetByIdQuery,
+  useUpdatePetMutation,
+} from "@/store/services/petApi";
 import dayjs from "dayjs";
 import moment from "moment";
+import { useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
 
-interface IProps {
-  selectedChange: IPet | null;
-  onClose: () => void;
-}
-
-const ModalEditShow: FC<IProps> = ({ selectedChange, onClose }) => {
+const EditPet: FC = () => {
   const t = useTranslations();
+
+  const router = useRouter();
   const [form] = Form.useForm<any>();
   const dateFormat = "YYYY-MM-DD";
+
+  const { id = "" } = useParams<{ id: any }>();
+
+  const { data: selectedChange } = useGetPetByIdQuery(id);
+
   const [updatePet, { isLoading: isLoadingUpdate }] = useUpdatePetMutation();
 
   const onFinish = async (values: any) => {
@@ -36,7 +45,7 @@ const ModalEditShow: FC<IProps> = ({ selectedChange, onClose }) => {
           : dayjs("2023-01-01", dateFormat),
       }).unwrap();
       toast.success(t("common.success"));
-      onClose();
+
       form.resetFields();
     } catch (error) {
       toast.error(getError(error));
@@ -63,7 +72,6 @@ const ModalEditShow: FC<IProps> = ({ selectedChange, onClose }) => {
     }
   }, [selectedChange, form]);
 
-  const isOpen = !!selectedChange;
   console.log("selectedChange:", selectedChange);
 
   const genderOptions = [
@@ -98,111 +106,73 @@ const ModalEditShow: FC<IProps> = ({ selectedChange, onClose }) => {
   ];
 
   return (
-    <Modal
-      width={1000}
-      style={{ top: 20 }}
-      open={isOpen}
-      title={"Редактировать"}
-      onCancel={onClose}
-      footer={[
-        <Button key="back" onClick={onClose}>
-          Отменить
-        </Button>,
+    <div className="flex min-h-screen ">
+      <div className="flex-1 p-2">
         <Button
-          key="submit"
-          type="primary"
-          form="pet-update"
+          onClick={() => router.back()}
+          type="link"
+          icon={<ArrowLeft />}
           loading={isLoadingUpdate}
-          htmlType="submit"
         >
-          {t("common.save")}
-        </Button>,
-      ]}
-    >
-      <Form id="pet-update" layout="vertical" form={form} onFinish={onFinish}>
-        <Form.Item
-          rules={[
-            {
-              required: true,
-              message: "Введите кличку",
-            },
-          ]}
-          name="title"
-          label={"Кличка"}
+          Назад
+        </Button>
+        <Form
+          className="p-6"
+          id="pet-update"
+          layout="vertical"
+          form={form}
+          onFinish={onFinish}
         >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          rules={[
-            {
-              required: true,
-              message: "Введите дату рождения",
-            },
-          ]}
-          name="birthDate"
-          label={"Дата рождения"}
-        >
-          <DatePicker format={dateFormat} />
-        </Form.Item>
-        <Form.Item
-          name="gender"
-          label="Пол"
-          rules={[
-            {
-              required: true,
-              message: "Выберите пол",
-            },
-          ]}
-        >
-          <Select options={genderOptions} />
-        </Form.Item>
-        <Form.Item
-          rules={[
-            {
-              required: true,
-              message: "Введите Ид.номер",
-            },
-          ]}
-          name="number"
-          label={"Ид.номер"}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name="breedTitle"
-          label="Порода"
-          rules={[
-            {
-              required: true,
-              message: "Выберите породу",
-            },
-          ]}
-        >
-          <Select options={breedOptions} />
-        </Form.Item>
-        <Form.Item
-          name="suitTitle"
-          label="Масть"
-          rules={[
-            {
-              required: true,
-              message: "Выберите масть",
-            },
-          ]}
-        >
-          <Select options={suitOptions} />
-        </Form.Item>
-        <Card title="Информация об отце">
-          <Form.Item name="father" label="Батыр">
-            <Select options={fatherOptions} />
-          </Form.Item>
-        </Card>
-        <Card title="Информация о матери">
-          <Form.Item name="motherId" label={"Ид.номер"}>
+          <Form.Item
+            rules={[
+              {
+                required: true,
+                message: "Введите кличку",
+              },
+            ]}
+            name="title"
+            label={"Кличка"}
+          >
             <Input />
           </Form.Item>
           <Form.Item
-            name="motherBreed"
+            rules={[
+              {
+                required: true,
+                message: "Введите дату рождения",
+              },
+            ]}
+            name="birthDate"
+            label={"Дата рождения"}
+          >
+            <DatePicker format={dateFormat} />
+          </Form.Item>
+          <Form.Item
+            name="gender"
+            label="Пол"
+            rules={[
+              {
+                required: true,
+                message: "Выберите пол",
+              },
+            ]}
+          >
+            <Select options={genderOptions} />
+          </Form.Item>
+          <Form.Item
+            rules={[
+              {
+                required: true,
+                message: "Введите Ид.номер",
+              },
+            ]}
+            name="number"
+            label={"Ид.номер"}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="breedTitle"
             label="Порода"
             rules={[
               {
@@ -214,7 +184,7 @@ const ModalEditShow: FC<IProps> = ({ selectedChange, onClose }) => {
             <Select options={breedOptions} />
           </Form.Item>
           <Form.Item
-            name="motherSuit"
+            name="suitTitle"
             label="Масть"
             rules={[
               {
@@ -225,10 +195,53 @@ const ModalEditShow: FC<IProps> = ({ selectedChange, onClose }) => {
           >
             <Select options={suitOptions} />
           </Form.Item>
-        </Card>
-      </Form>
-    </Modal>
+          <Card title="Информация об отце">
+            <Form.Item name="father" label="Батыр">
+              <Select options={fatherOptions} />
+            </Form.Item>
+          </Card>
+          <Card title="Информация о матери">
+            <Form.Item name="motherId" label={"Ид.номер"}>
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="motherBreed"
+              label="Порода"
+              rules={[
+                {
+                  required: true,
+                  message: "Выберите породу",
+                },
+              ]}
+            >
+              <Select options={breedOptions} />
+            </Form.Item>
+            <Form.Item
+              name="motherSuit"
+              label="Масть"
+              rules={[
+                {
+                  required: true,
+                  message: "Выберите масть",
+                },
+              ]}
+            >
+              <Select options={suitOptions} />
+            </Form.Item>
+          </Card>
+          <Button
+            key="submit"
+            type="primary"
+            form="pet-update"
+            loading={isLoadingUpdate}
+            htmlType="submit"
+          >
+            {t("common.save")}
+          </Button>
+        </Form>
+      </div>
+    </div>
   );
 };
 
-export default ModalEditShow;
+export default EditPet;

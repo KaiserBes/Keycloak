@@ -1,4 +1,4 @@
-import { Links, LocalizedText } from "./general.interfaces";
+import { Links } from "./general.interfaces";
 
 export interface IOrganizationTypes {
   id: number;
@@ -35,4 +35,16 @@ export interface ITreeData {
 export interface IDashboard {
   type: string;
   count: number;
+}
+
+export interface ISuit {
+  id: number;
+  title: string;
+}
+
+export interface ICountry {
+  id: number;
+  code: string;
+  title: string;
+  name: Title;
 }

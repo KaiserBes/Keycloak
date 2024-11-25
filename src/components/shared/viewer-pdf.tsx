@@ -33,7 +33,6 @@ const ViewerPdf: FC<IViewerWrapperProps> = ({ fileUrl, fileName }) => {
       {(slots: ToolbarSlot) => {
         const {
           CurrentPageInput,
-          Download,
           EnterFullScreen,
           GoToNextPage,
           GoToPreviousPage,

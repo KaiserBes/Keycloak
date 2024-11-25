@@ -17,7 +17,7 @@ import { useGetLocalityQuery } from "@/store/services/localityApi";
 const EditFarmerPage = () => {
   const { id = "" } = useParams<{ id: any }>();
 
-  const { data: selectedEdit, isLoading } = useGetFarmByIdQuery(id);
+  const { data: selectedEdit } = useGetFarmByIdQuery(id);
 
   const [updateFarm, { isLoading: isLoadingUpdate }] = useUpdateFarmMutation();
   const [deleteFarm] = useDeleteFarmMutation();

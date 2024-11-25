@@ -1,19 +1,21 @@
 "use client";
 
-import { Header } from "@/components/shared/header";
 import { useLocale, useTranslations } from "next-intl";
-import { SquarePlus } from "lucide-react";
-import { FC, useState } from "react";
-import SearchInput from "../farm/searchInput";
-import { Button, Space, Table, TableProps, Tooltip, message } from "antd";
+
+import React, { FC, useState, useCallback, useEffect } from "react";
+import { Input } from "antd";
+
+import { Button, Space, Table, TableProps } from "antd";
 import { Locale } from "@/lib/locales";
 
 import useFilter from "@/hooks/useFilter";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useGetFarmQuery } from "@/store/services/farmApi";
-import { Sidebar } from "@/components/shared/sidebar";
-import { IFarm } from "@/store/models/interfaces/farm.interfaces";
+
+import _ from "lodash";
+import Link from "next/link";
+
+import { useGetMaleQuery } from "@/store/services/maleApi";
 
 const pageLocale = {
   ru: "размер",
@@ -22,97 +24,93 @@ const pageLocale = {
 interface IFilter {
   page: number;
   size: number;
-  name?: string;
+  title?: string;
 }
-
-export enum ModalType {
-  reAssign = "RE_ASSIGN",
-  detail = "DETAIL",
-}
-
-const initValueClickedJob = "";
 
 const Male: FC = () => {
-  const [messageApi, contextHolder] = message.useMessage();
   const locale = useLocale() as Locale;
-  const searchParams = useSearchParams();
-  const [clickedJob, setIdClickedJob] = useState({
-    farmId: initValueClickedJob,
-    type: ModalType.detail,
-  });
-
-  const { paginationHandler, filter, changeFilter, changeSearch } =
-    useFilter<IFilter>({
-      page: Number(searchParams.get("page")) || 0,
-      size: Number(searchParams.get("size")) || 10,
-    });
   const t = useTranslations();
 
-  const {
-    data: userJobs = {
-      totalElements: 0,
-      content: [],
-    },
-    isLoading,
-  } = useGetFarmQuery({ ...filter });
+  const searchParams = useSearchParams();
 
-  const columns: TableProps<IFarm>["columns"] = [
+  const { paginationHandler, filter, changeFilter } = useFilter<IFilter>({
+    page: Number(searchParams.get("page")) || 0,
+    size: Number(searchParams.get("size")) || 10,
+  });
+
+  const [allMales, setAllMales] = useState<IMale[]>([]);
+  const [filteredMales, setFilteredMales] = useState<IMale[]>([]);
+
+  const { data: males = [], isFetching } = useGetMaleQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+    ...filter,
+  });
+
+  useEffect(() => {
+    if (males && Array.isArray(males)) {
+      setAllMales(males as IMale[]);
+      setFilteredMales(males as IMale[]);
+    }
+  }, [males]);
+
+  const handleSearch = useCallback(
+    _.debounce((e) => {
+      const value = e.target.value.toLowerCase();
+      const filteredData = allMales.filter((male) =>
+        male.title.toLowerCase().includes(value)
+      );
+      setFilteredMales(filteredData);
+    }, 300),
+    [allMales]
+  );
+
+  const columns: TableProps<IMale>["columns"] = [
     {
       title: "Кличка",
       dataIndex: "title",
-      key: "title",
-      render: (_, data) => <p>{data.performer?.title}</p>,
+      key: "1",
+      render: (_, data) => <p>{data?.title}</p>,
     },
     {
       title: "Ид.номер",
-      dataIndex: "title",
-      key: "title",
+      dataIndex: "number",
+      key: "2",
+      render: (_, data) => <p>{data?.number}</p>,
     },
     {
-      title: t("male.color"),
-      dataIndex: "title",
-      key: "title",
+      title: t("pet.color"),
+      dataIndex: "suitTitle",
+      key: "3",
+      render: (_, data) => <p>{data?.suitTitle}</p>,
     },
     {
-      title: t("male.breed"),
-      dataIndex: "title",
-      key: "title",
+      title: t("pet.breed"),
+      dataIndex: "breedTitle",
+      key: "4",
+      render: (_, data) => <p>{data?.breedTitle}</p>,
     },
     {
       title: t("male.weight"),
-      dataIndex: "title",
-      key: "title",
+      dataIndex: "weight",
+      key: "5",
+      render: (_, data) => <p>{data?.weight}</p>,
     },
-
     {
       title: t("farmpage.try"),
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <Tooltip title="Посмотреть">
-            <Button onClick={() => handleShowDetail(record.farmId)} />
-          </Tooltip>
-
-          <Button
-            disabled={
-              record.type === "FARM_TIN" ||
-              record.type === "FARM_NUMBER" ||
-              record.type === "FARM_STAT_NO"
-            }
-            onClick={() => handleShowReAssign(record.farmId)}
-          >
-            {t("common.re-assign")}
-          </Button>
+          <Link href={`/${locale}/male/edit/${record.id}`}>
+            <Button>{t("common.edit")}</Button>
+          </Link>
+          <Link href={`/${locale}/male/show/${record.id}`}>
+            <Button>{t("common.show")}</Button>
+          </Link>
         </Space>
       ),
     },
   ];
-  const handleShowDetail = (id: string) => {
-    setIdClickedJob({ farmId: id, type: ModalType.detail });
-  };
-  const handleShowReAssign = (id: string) => {
-    setIdClickedJob({ farmId: id, type: ModalType.reAssign });
-  };
+
   const router = useRouter();
   const handleClickOpenCreate = () => {
     router.push(`/${locale}/male/create`);
@@ -120,39 +118,42 @@ const Male: FC = () => {
 
   return (
     <div className="flex flex-col h-screen ">
-      {contextHolder}
       <div className="flex">
         <div className="w-full">
           <div className="content-area bg-gray-100 dark:bg-black">
             <div className="w-full flex justify-between items-center mb-2">
-              <span className="text-xl font-semibold">{t("male.list")}</span>
+              <span className="text-xl font-semibold">
+                {t("farmpage.title")}
+              </span>
               <Button onClick={handleClickOpenCreate}>
                 {t("farmpage.create-button")}
               </Button>
             </div>
-            <SearchInput />
+            <Input
+              name="name"
+              placeholder="Поиск по кличке"
+              onChange={handleSearch}
+            />
             <Table
+              bordered
               size="small"
-              loading={isLoading}
+              loading={isFetching}
               pagination={{
                 pageSize: filter.size,
-                total: userJobs.totalElements,
+                total: filteredMales.length,
                 locale: {
-                  items_per_page: pageLocale[locale],
+                  items_per_page: pageLocale[locale as keyof typeof pageLocale],
                 },
-                onShowSizeChange: (_, size) => changeFilter("size", size),
+                onShowSizeChange: (_, size) => {
+                  changeFilter("size", size);
+                },
                 onChange: paginationHandler,
                 pageSizeOptions: [10, 20, 50],
               }}
               columns={columns}
-              dataSource={userJobs.content}
+              dataSource={filteredMales}
             />
           </div>
-          {/* <Pagination
-            className="flex justify-end mt-5 mr-2"
-            defaultCurrent={6}
-            total={500}
-          /> */}
         </div>
       </div>
     </div>

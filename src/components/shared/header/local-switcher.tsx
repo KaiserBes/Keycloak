@@ -14,6 +14,7 @@ export default function LocaleSwitcher() {
     startTransition(() => {
       const newPath = pathname.replace(`/${localeActive}`, `/${nextLocale}`);
       router.replace(newPath);
+      console.log("isPending:", isPending);
     });
   };
 

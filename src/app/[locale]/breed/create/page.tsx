@@ -10,15 +10,15 @@ import BackButton from "@/components/shared/createBackButton";
 
 import { Locale } from "@/lib/locales";
 import { useRouter } from "next/navigation";
-import { useCreateSuitMutation } from "@/store/services/suitApi";
+import { useCreateBreedMutation } from "@/store/services/breedApi";
 
-const CreateSuitPage = () => {
+const CreateBreedPage = () => {
   const [form] = Form.useForm<string>();
   const locale = useLocale() as Locale;
 
   const router = useRouter();
 
-  const [createSuit, { isLoading: isLoadingAdd }] = useCreateSuitMutation();
+  const [createBreed, { isLoading: isLoadingAdd }] = useCreateBreedMutation();
 
   const formRules = {
     personTitle: [{ required: true, message: "Введите Фермера" }],
@@ -27,9 +27,9 @@ const CreateSuitPage = () => {
 
   const onFinish = async (values: any) => {
     try {
-      await createSuit({ ...values }).unwrap();
-      toast.success("Масть успешно создана");
-      router.push(`/${locale}/suit`);
+      await createBreed({ ...values }).unwrap();
+      toast.success("Порода успешно создана");
+      router.push(`/${locale}/breed`);
       form.resetFields();
     } catch (error) {
       toast.error(getError(error));
@@ -41,7 +41,7 @@ const CreateSuitPage = () => {
       <div className="flex-1 p-6">
         <BackButton />
         <Form id="suit" layout="vertical" form={form} onFinish={onFinish}>
-          <Form.Item name="title" label="Масть" rules={formRules.personTitle}>
+          <Form.Item name="title" label="Порода" rules={formRules.personTitle}>
             <Input />
           </Form.Item>
           <Button
@@ -59,4 +59,4 @@ const CreateSuitPage = () => {
   );
 };
 
-export default CreateSuitPage;
+export default CreateBreedPage;

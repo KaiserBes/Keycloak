@@ -73,6 +73,7 @@ export interface IPet {
   left: IParent | null;
   right: IParent | null;
   color: string;
+  data: any;
 }
 
 export interface IDocsListByStatementId {

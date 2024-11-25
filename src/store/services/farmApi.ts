@@ -48,7 +48,7 @@ export const farmApi = createApi({
       }),
       invalidatesTags: ["farms"],
     }),
-    createFarm: builder.mutation<void, any>({
+    createFarm: builder.mutation<IFarm, any>({
       query: (body) => ({
         url: "/farm",
         method: "POST",

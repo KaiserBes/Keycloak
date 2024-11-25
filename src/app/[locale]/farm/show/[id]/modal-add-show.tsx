@@ -1,19 +1,13 @@
 import { Button, Card, DatePicker, Form, Input, Modal, Select } from "antd";
-import { useLocale, useTranslations } from "next-intl";
-import { FC, useEffect } from "react";
+import { useTranslations } from "next-intl";
+import { FC } from "react";
 import toast from "react-hot-toast";
 
-import { IOrganizationTypes } from "@/store/models/interfaces/base.interfaces";
-
 import { getError } from "@/lib/general";
-import { Locale } from "@/lib/locales";
+
 import { IPet } from "@/store/models/interfaces/pet.interfaces";
-import {
-  useAddPetMutation,
-  useUpdatePetMutation,
-} from "@/store/services/petApi";
+import { useAddPetMutation } from "@/store/services/petApi";
 import dayjs from "dayjs";
-import moment from "moment";
 
 interface IProps {
   selectedAdd: IPet | null;

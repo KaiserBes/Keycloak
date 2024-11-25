@@ -5,20 +5,23 @@ import { useLocale, useTranslations } from "next-intl";
 import React, { FC, useState, useCallback, useEffect } from "react";
 import { Input } from "antd";
 
-import { Button, Space, Table, TableProps, Tooltip } from "antd";
+import { Button, Space, Table, TableProps } from "antd";
 import { Locale } from "@/lib/locales";
 
 import useFilter from "@/hooks/useFilter";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useGetFarmsQuery } from "@/store/services/farmApi";
-
-import { IFarm } from "@/store/models/interfaces/farm.interfaces";
-import { FarmState } from "@/store/models/enums/general";
 
 import _ from "lodash";
 import Link from "next/link";
-import { Eye } from "lucide-react";
+
+import toast from "react-hot-toast";
+import { getError } from "@/lib/general";
+import { ISuit } from "@/store/models/interfaces/base.interfaces";
+import {
+  useDeleteBreedMutation,
+  useGetBreedQuery,
+} from "@/store/services/breedApi";
 
 const pageLocale = {
   ru: "размер",
@@ -30,72 +33,74 @@ interface IFilter {
   title?: string;
 }
 
-const Farm: FC = () => {
+const Breed: FC = () => {
   const locale = useLocale() as Locale;
   const t = useTranslations();
 
   const searchParams = useSearchParams();
 
-  const [farmState] = useState<string>(FarmState.STARTED);
+  const [suitState] = useState<any>();
 
   const { paginationHandler, filter, changeFilter } = useFilter<IFilter>({
     page: Number(searchParams.get("page")) || 0,
     size: Number(searchParams.get("size")) || 10,
   });
 
-  const [allFarms, setAllFarms] = useState<IFarm[]>([]);
-  const [filteredFarms, setFilteredFarms] = useState<IFarm[]>([]);
+  const [allMales, setAllMales] = useState<IMale[]>([]);
+  const [filteredMales, setFilteredMales] = useState<IMale[]>([]);
 
-  const { data, isFetching } = useGetFarmsQuery(farmState, {
+  const { data, isFetching } = useGetBreedQuery(suitState, {
     refetchOnMountOrArgChange: true,
     ...filter,
   });
 
+  const [deleteBreed] = useDeleteBreedMutation();
+
+  const deleteSuitHandler = async (id: any) => {
+    try {
+      await deleteBreed(id).unwrap();
+      toast.success(t("Успешно удалено"));
+    } catch (error) {
+      toast.error(getError(error));
+    }
+  };
+
   useEffect(() => {
     if (data && Array.isArray(data)) {
-      setAllFarms(data as IFarm[]);
-      setFilteredFarms(data as IFarm[]);
+      setAllMales(data as IMale[]);
+      setFilteredMales(data as IMale[]);
     }
   }, [data]);
 
   const handleSearch = useCallback(
     _.debounce((e) => {
       const value = e.target.value.toLowerCase();
-      const filteredData = allFarms.filter((farm) =>
-        farm.personTitle.toLowerCase().includes(value)
+      const filteredData = allMales.filter((male) =>
+        male.title.toLowerCase().includes(value)
       );
-      setFilteredFarms(filteredData);
+      setFilteredMales(filteredData);
     }, 300),
-    [allFarms]
+    [allMales]
   );
 
-  const columns: TableProps<IFarm>["columns"] = [
+  const columns: TableProps<ISuit>["columns"] = [
     {
-      title: "Фермер",
-      dataIndex: "personTitle",
-      key: "personTitle",
+      title: t("pet.breed"),
+      dataIndex: "title",
+      key: "title",
       render: (_, data) => <p>{data?.title}</p>,
-    },
-    {
-      title: t("farmpage.paragraph"),
-      dataIndex: "localityTitle",
-      key: "localityTitle",
-      render: (_, data) => <p>{data?.localityTitle}</p>,
     },
     {
       title: t("farmpage.try"),
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <Link href={`/${locale}/farm/show/${record.id}`}>
-            <Tooltip title="Посмотреть">
-              <Button icon={<Eye className="w-4 h-4" />} />
-            </Tooltip>
-          </Link>
-
-          <Link href={`/${locale}/farm/edit/${record.id}`}>
+          <Link href={`/${locale}/breed/edit/${record.id}`}>
             <Button>{t("common.edit")}</Button>
           </Link>
+          <Button danger onClick={() => deleteSuitHandler(record.id)}>
+            {t("common.delete")}
+          </Button>
         </Space>
       ),
     },
@@ -103,7 +108,7 @@ const Farm: FC = () => {
 
   const router = useRouter();
   const handleClickOpenCreate = () => {
-    router.push(`/${locale}/farm/create`);
+    router.push(`/${locale}/breed/create`);
   };
 
   return (
@@ -121,7 +126,7 @@ const Farm: FC = () => {
             </div>
             <Input
               name="name"
-              placeholder="Поиск по фермеру"
+              placeholder="Поиск по кличке"
               onChange={handleSearch}
             />
             <Table
@@ -140,7 +145,7 @@ const Farm: FC = () => {
                 pageSizeOptions: [10, 20, 50],
               }}
               columns={columns}
-              dataSource={filteredFarms}
+              dataSource={filteredMales}
             />
           </div>
         </div>
@@ -149,4 +154,4 @@ const Farm: FC = () => {
   );
 };
 
-export default Farm;
+export default Breed;

@@ -1,43 +1,26 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import {
-  Button,
-  Form,
-  message,
-  Select,
-  Space,
-  Table,
-  TableProps,
-  Tooltip,
-} from "antd";
-import { useLocale, useTranslations } from "next-intl";
+import { Button, Form, message, Space, Table, TableProps, Tooltip } from "antd";
+import { useTranslations } from "next-intl";
 import { EditOutlined } from "@ant-design/icons";
 
-import {
-  useDeleteFarmMutation,
-  useGetFarmByIdQuery,
-  useUpdateFarmMutation,
-} from "@/store/services/farmApi";
-import toast from "react-hot-toast";
+import { useGetFarmByIdQuery } from "@/store/services/farmApi";
 import { getError } from "@/lib/general";
-import _ from "lodash";
-import { useGetLocalityQuery } from "@/store/services/localityApi";
-import Link from "next/link";
+
 import { IPet } from "@/store/models/interfaces/pet.interfaces";
-import { useGetPetQuery } from "@/store/services/petApi";
-import { useSession } from "next-auth/react";
+import { useDeletePetMutation, useGetPetQuery } from "@/store/services/petApi";
+
 import ModalEditShow from "./modal-edit-show";
-import ViewerPdf from "@/components/shared/viewer-pdf";
+
 import ViewDocuments from "./view.documents";
-import { PrimaryButton } from "@react-pdf-viewer/core";
+
 import ModalAddShow from "./modal-add-show";
+import { Trash2 } from "lucide-react";
 
 const ShowFarmerPage = () => {
-  const { data: session } = useSession();
   const [messageApi, contextHolder] = message.useMessage();
-  const [isOpen, setIsOpen] = useState(false);
   const [selectedChange, setSelectedChange] = useState<IPet | null>(null);
   const [selectedAdd, setSelectedAdd] = useState<IPet | null>(null);
 
@@ -45,15 +28,11 @@ const ShowFarmerPage = () => {
   const [filteredPets, setFilteredPets] = useState<IPet[]>([]);
   const [allPets, setAllPets] = useState<IPet[]>([]);
 
-  const { data: selectedEdit, isLoading } = useGetFarmByIdQuery(id);
+  const { data: selectedEdit } = useGetFarmByIdQuery(id);
   const { data: petsData, isLoading: isLoadingPets } = useGetPetQuery({
     farmId: parseInt(id),
     title: "",
   });
-
-  const showEditModal = () => setIsOpen(false);
-
-  const showModalHandler = () => setIsOpen(true);
 
   const handleUnSelectAdd = () => setSelectedAdd(null);
   const handleSelectAdd = (farm: IPet) => setSelectedAdd(farm);
@@ -68,30 +47,23 @@ const ShowFarmerPage = () => {
     }
   }, [petsData, id]);
 
-  const [updateFarm, { isLoading: isLoadingUpdate }] = useUpdateFarmMutation();
-  const [deleteFarm] = useDeleteFarmMutation();
   const [form] = Form.useForm();
-  const locale = useLocale();
+
   const router = useRouter();
   const t = useTranslations();
-  const [searchQuery, setSearchQuery] = React.useState("");
 
-  const handleSearch = useCallback(
-    _.debounce((e) => {
-      const value = e.target.value.toLowerCase();
-      const filteredData = allPets.filter((pet: any) =>
-        pet.personTitle.toLowerCase().includes(value)
-      );
-      setFilteredPets(filteredData);
-    }, 300),
-    [allPets]
-  );
+  const [deletePet] = useDeletePetMutation();
 
-  const formRules = {
-    personId: [{ required: true, message: "Выберите пункт" }],
+  const deleteFarmHandler = async (id: string) => {
+    try {
+      await deletePet(id).unwrap();
+      console.log(allPets);
+
+      messageApi.open({ type: "success", content: t("common.success") });
+    } catch (error) {
+      messageApi.open({ type: "error", content: getError(error) });
+    }
   };
-
-  const { data: localities, isFetching } = useGetLocalityQuery(searchQuery);
 
   useEffect(() => {
     if (selectedEdit) {
@@ -165,44 +137,26 @@ const ShowFarmerPage = () => {
           >
             {t("common.edit")}
           </Button>
-
           <ViewDocuments
             certificateType={record.certificateType}
             certificateId={record.certificateId}
           />
+          <Tooltip title="Удалить">
+            <Button
+              onClick={() => deleteFarmHandler(id)}
+              danger
+              icon={<Trash2 className="w-4 h-4" />}
+            />
+          </Tooltip>
         </Space>
       ),
     },
   ];
 
-  const deleteFarmHandler = async (id: string) => {
-    try {
-      await deleteFarm(id).unwrap();
-      toast.success(t("Успешно удалено"));
-      router.push(`/${locale}/farm`);
-    } catch (error) {
-      toast.error(getError(error));
-    }
-  };
-
-  const onFinish = async (values: any) => {
-    try {
-      await updateFarm({ id: id, body: values }).unwrap();
-      toast.success("Успешно изменено");
-      router.push(`/${locale}/farm`);
-    } catch (error) {
-      toast.error(getError(error));
-    }
-  };
-
   return (
     <div className="mx-10">
       <div className="">
-        <Button
-          onClick={() => router.back()}
-          type="link"
-          loading={isLoadingUpdate}
-        >
+        <Button onClick={() => router.back()} type="link">
           {t("common.back")}
         </Button>
       </div>
@@ -238,7 +192,6 @@ const ShowFarmerPage = () => {
         </div>
       </div>
       <ModalAddShow selectedAdd={selectedAdd} onClose={handleUnSelectAdd} />
-
       <ModalEditShow
         selectedChange={selectedChange}
         onClose={handleUnSelectEdit}

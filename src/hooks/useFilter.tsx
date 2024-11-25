@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { ChangeEvent, useState } from "react";
+import { useState } from "react";
 
 const useFilter = <T extends object>(defaultValues?: T) => {
   const [filter, setFilter] = useState<T>(defaultValues || ({} as T));
