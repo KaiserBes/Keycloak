@@ -25,7 +25,7 @@ const CreateMalePage = () => {
 
   const [addMale, { isLoading: isLoadingAdd }] = useCreateMaleMutation();
 
-  const { data: breeds = [] } = useGetBreedQuery("");
+  const { data: breeds = [], isLoading } = useGetBreedQuery("");
   const { data: suits = [] } = useGetSuitQuery("");
   const { data: countries = [] } = useGetCountryQuery("");
 
@@ -73,26 +73,26 @@ const CreateMalePage = () => {
             <Input />
           </Form.Item>
           <Form.Item
-            name="breedTitle"
+            name="breedId"
             label="Порода"
             rules={[{ required: true, message: "Выберите породу" }]}
           >
-            <Select>
-              {breeds.map((breed) => (
-                <Select.Option key={breed.id} value={breed.title}>
+            <Select loading={isLoading}>
+              {breeds?.map((breed) => (
+                <Select.Option key={breed.id} value={breed.id}>
                   {breed.title}
                 </Select.Option>
               ))}
             </Select>
           </Form.Item>
           <Form.Item
-            name="suitTitle"
+            name="suitId"
             label="Масть"
             rules={[{ required: true, message: "Выберите масть" }]}
           >
             <Select>
               {suits.map((suit) => (
-                <Select.Option key={suit.id} value={suit.title}>
+                <Select.Option key={suit.id} value={suit.id}>
                   {suit.title}
                 </Select.Option>
               ))}
@@ -102,7 +102,7 @@ const CreateMalePage = () => {
             <Input />
           </Form.Item>
           <Form.Item
-            name="originTitle"
+            name="originId"
             label="Страна происхождения"
             rules={[{ required: true, message: "Выберите масть" }]}
           >

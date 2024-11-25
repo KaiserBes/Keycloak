@@ -79,13 +79,13 @@ const Male: FC = () => {
     },
     {
       title: t("pet.color"),
-      dataIndex: "suitTitle",
+      dataIndex: "suitId",
       key: "3",
       render: (_, data) => <p>{data?.suitTitle}</p>,
     },
     {
       title: t("pet.breed"),
-      dataIndex: "breedTitle",
+      dataIndex: "breedId",
       key: "4",
       render: (_, data) => <p>{data?.breedTitle}</p>,
     },
