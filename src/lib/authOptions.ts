@@ -1,6 +1,6 @@
 import { AuthOptions } from "next-auth";
 import KeycloakProvider from "next-auth/providers/keycloak";
-import { refreshAccessToken, doFinalSignoutHandshake } from "@/lib/auth";
+import { doFinalSignoutHandshake } from "@/lib/auth";
 
 export const authOptions: AuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
@@ -13,12 +13,16 @@ export const authOptions: AuthOptions = {
   ],
   events: {
     async signOut({ token }) {
-      await doFinalSignoutHandshake(token);
+      if (token) {
+        await doFinalSignoutHandshake(token);
+      }
     },
   },
+
   callbacks: {
     async jwt({ token, account }) {
       const expiresIn = 10 * 10;
+
       if (account) {
         token.access_token = account.access_token;
         token.refresh_token = account.refresh_token;
@@ -26,14 +30,19 @@ export const authOptions: AuthOptions = {
         return token;
       }
 
-      if (Date.now() < token.expires_at) {
-        return token;
+      if (Date.now() >= token.expires_at) {
+        return {
+          ...token,
+          error: "TokenExpired",
+        };
       }
-      return await refreshAccessToken(token);
+
+      return token;
     },
     async session({ session, token }) {
       session.access_token = token.access_token;
       session.refresh_token = token.refresh_token;
+      session.error = token.error;
       return session;
     },
   },

@@ -102,7 +102,7 @@ const CreateMalePage = () => {
             <Input />
           </Form.Item>
           <Form.Item
-            name="originId"
+            name="originTitle"
             label="Страна происхождения"
             rules={[{ required: true, message: "Выберите масть" }]}
           >

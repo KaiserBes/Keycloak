@@ -5,7 +5,7 @@ export async function doFinalSignoutHandshake(jwt: JWT) {
   try {
     const { id_token } = jwt;
     const params = new URLSearchParams();
-    params.append("client_id", `${process.env.APP_CLIENT_ID}`);
+    params.append("client_id", `${process.env.KEYCLOAK_CLIENT_ID}`);
     params.append("id_token_hint", `${id_token}`);
     const url = `${process.env.END_SESSION_URL}?${params.toString()}`;
     await fetch(url);
@@ -17,8 +17,8 @@ export async function doFinalSignoutHandshake(jwt: JWT) {
 export async function refreshAccessToken(token: JWT, isInterceptor?: boolean) {
   try {
     const params = new URLSearchParams({
-      client_id: process.env.APP_CLIENT_ID || "",
-      client_secret: process.env.APP_CLIENT_SECRET || "",
+      client_id: process.env.KEYCLOAK_CLIENT_ID || "",
+      client_secret: process.env.KEYCLOAK_CLIENT_SECRET || "",
       grant_type: "refresh_token",
       refresh_token: token.refresh_token,
     });
